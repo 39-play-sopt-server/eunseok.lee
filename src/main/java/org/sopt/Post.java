@@ -3,6 +3,7 @@ package org.sopt;
 
 
 public class Post {
+    private Long id;
     private String title;
     private String content;
     private Category category;
@@ -20,6 +21,18 @@ public class Post {
 
         checkTitle(title);
         checkContent(content);
+        if (category == null) {
+            throw new IllegalArgumentException("카테고리를 입력하세요.");
+        }
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    // ID는 저장소에서 처음 저장할 때 부여합니다.
+    void assignId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -43,6 +56,13 @@ public class Post {
         checkContent(content);
         this.content = content;
 
+    }
+
+    public void update(String title, String content) {
+        checkTitle(title);
+        checkContent(content);
+        this.title = title;
+        this.content = content;
     }
 
     private void checkTitle(String title) {

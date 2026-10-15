@@ -1,36 +1,44 @@
 package org.sopt;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
-
+@Service
 public class PostService {
 
-    private final PostRepository repository = new PostRepository();
+    private final PostRepository postRepository;
+
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     public void createPost(String title, String content, Post.Category category) {
         Post post = new Post(title, content, category);
-        repository.addPost(post);
+        postRepository.addPost(post);
     }
 
     public List<Post> getAllPosts() {
-        return repository.findAll();
+        return postRepository.findAll();
     }
 
-    public Post getPost(int index) {
-        if (index < 0 || index >= repository.findAll().size()) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
-        return repository.findByIndex(index);
+    public Post getPost(Long postId) {
+        Post post = postRepository.findById(postId);
+
+        if (post == null) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        return post;
+
     }
 
-    public void updatePost(int index, String title, String content) {
-        Post post = getPost(index);
+    public void updatePost(Long postId, String title, String content) {
+        Post post = getPost(postId);
 
-        post.updateTitle(title);
-        post.updateContent(content);
+        post.update(title, content);
     }
 
-    public void deletePost(int index) {
-        Post post = getPost(index);
-        repository.deletePost(post);
+    public void deletePost(Long postId) {
+        Post post = getPost(postId);
+        postRepository.deletePost(post);
     }
 
 
