@@ -7,6 +7,7 @@ public class Post {
     private String title;
     private String content;
     private Category category;
+    private int views;
 
     public enum Category {
         FREE,
@@ -30,7 +31,15 @@ public class Post {
         return this.id;
     }
 
-    // ID는 저장소에서 처음 저장할 때 부여합니다.
+    //2차 과제 : 조회수 필드 추가
+    public int getViews() {
+        return this.views;
+    }
+
+    public void increaseViews() {
+        this.views++;
+    }
+
     void assignId(Long id) {
         this.id = id;
     }
