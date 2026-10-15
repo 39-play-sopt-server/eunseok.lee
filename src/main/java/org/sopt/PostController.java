@@ -1,112 +1,73 @@
 // PostController
 package org.sopt;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
+@RestController
+@RequestMapping(path = "/api/v1/posts")
+
 public class PostController {
-    private final PostService service = new PostService();
-    private final PostView view;
 
-    public PostController(PostView view) {
-        this.view = view;
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    public void run() {
-        while (true) {
-            view.printMenu();
-            int command = view.readCommand();
-            switch (command) {
-                case 1 -> createPost();
-                case 2 -> readPosts();
-                case 3 -> readPost();
-                case 4 -> updatePost();
-                case 5 -> deletePost();
-                case 6 -> {
-                    view.printMessage("프로그램을 종료합니다.");
-                    return;
-                }
-                default -> view.printMessage("잘못된 입력입니다.");
-            }
-        }
+
+
+    @PostMapping
+    public ApiResponse<?> createPost(
+            @RequestBody(required = true) CreatePostRequest request
+    ) {
+        postService.createPost(request.getTitle(), request.getContent(), request.getCategory());
+        return new ApiResponse<>("게시글이 작성되었습니다.");
     }
 
-    private void createPost() {
-        try {
-            String title = view.readTitle();
-            String content = view.readContent();
-            Post.Category category = view.readCategory();
-
-            service.createPost(title, content, category);
-            view.printMessage("게시글이 작성되었습니다.");
-        } catch (IllegalArgumentException e) {
-            view.printMessage(e.getMessage());
-        }
-
+    @GetMapping
+    public ApiResponse<?> readPosts(
+            @RequestParam(name = "page", defaultValue = "1") int page
+    ) {
+        // page 값을 받는 바인딩 실습입니다. 실제 페이지네이션은 심화 과제에서 구현합니다.
+        List<Post> posts = postService.getAllPosts();
+        return new ApiResponse<>(posts);
     }
 
-    private void readPosts() {
-        List<Post> posts = service.getAllPosts();
-
-        if (posts.isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-        for (int i = 0; i < posts.size(); i++) {
-            Post post = posts.get(i);
-            view.printMessage((i + 1) + ". [" + post.getCategory() + "] " + post.getTitle());        }
+    @GetMapping(path = "/{postId}")
+    public ApiResponse<?> readPost(
+            @PathVariable(name = "postId") Long postId
+    ) {
+        return new ApiResponse<>(postService.getPost(postId));
     }
 
-    private void readPost() {
-        if (service.getAllPosts().isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-
-        try {
-            int index = view.readPostNumber("조회할 게시글 번호: ") - 1;
-
-            Post post = service.getPost(index);
-            view.printPost(post);
-        } catch (IllegalArgumentException e) {
-            view.printMessage(e.getMessage());
-        }
+    @PutMapping(path = "/{postId}")
+    public ApiResponse<?> updatePost(
+            @PathVariable(name = "postId") Long postId,
+            @RequestBody UpdatePostRequest request
+    ) {
+        postService.updatePost(postId, request.getTitle(), request.getContent());
+        return new ApiResponse<>("게시글이 수정되었습니다.");
     }
 
-    private void updatePost() {
-        if (service.getAllPosts().isEmpty()) {
-            view.printMessage("게시글이 없습니다.");
-            return;
-        }
-
-
-        try {
-            int index = view.readPostNumber("수정할 게시글 번호: ") - 1;
-
-            String newTitle = view.readTitle();
-            String newContent = view.readContent();
-
-            service.updatePost(index, newTitle, newContent);
-
-            view.printMessage("게시글이 수정되었습니다.");
-        } catch (IllegalArgumentException e) {
-            view.printMessage(e.getMessage());
-        }
+    @DeleteMapping(path = "/{postId}")
+    public ResponseEntity<?> deletePost(
+            @PathVariable(name = "postId") Long postId
+    ) {
+        postService.deletePost(postId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("삭제 완료");
     }
-
-    private void deletePost() {
-        if (service.getAllPosts().isEmpty()) {
-            view.printMessage("게시글이 존재하지 않습니다.");
-            return;
-        }
-
-        try {
-            int index = view.readPostNumber("삭제할 게시글 번호: ") - 1;
-
-            service.deletePost(index);
-            view.printMessage("게시글이 삭제되었습니다.");
-        } catch (IllegalArgumentException e) {
-            view.printMessage(e.getMessage());
-        }
-    }
-
 }
