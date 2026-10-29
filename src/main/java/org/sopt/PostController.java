@@ -1,23 +1,17 @@
-// PostController
 package org.sopt;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import java.util.ArrayList;
 import java.util.List;
 
+@Tag(name = "게시글", description = "게시글 생성, 조회, 수정, 삭제 API")
 @RestController
 @RequestMapping(path = "/api/v1/posts")
-
 public class PostController {
 
     private final PostService postService;
@@ -26,48 +20,65 @@ public class PostController {
         this.postService = postService;
     }
 
-
-
+    @Operation(
+            summary = "게시글 생성",
+            description = "게시글을 생성하고 ID를 포함한 게시글 정보를 반환합니다.",
+            responses = @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "게시글 생성 성공",
+                    useReturnTypeSchema = true
+            )
+    )
     @PostMapping
-    public ApiResponse<?> createPost(
-            @RequestBody(required = true) CreatePostRequest request
+    public ResponseEntity<ApiResponse<PostResponse>> createPost(
+            @RequestBody CreatePostRequest request
     ) {
-        postService.createPost(request.getTitle(), request.getContent(), request.getCategory());
-        return new ApiResponse<>("게시글이 작성되었습니다.");
+        Post post = postService.createPost(request.getTitle(), request.getContent(), request.getCategory());
+        PostResponse postResponse = new PostResponse(post);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>("게시글이 작성되었습니다.", postResponse));
     }
 
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다. 조회수는 증가하지 않습니다.")
     @GetMapping
-    public ApiResponse<?> readPosts(
+    public ApiResponse<List<PostResponse>> readPosts(
+            @Parameter(description = "현재는 입력만 받으며 실제 페이지네이션은 적용되지 않습니다.", example = "1")
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        // page 값을 받는 바인딩 실습입니다. 실제 페이지네이션은 심화 과제에서 구현합니다.
         List<Post> posts = postService.getAllPosts();
-        return new ApiResponse<>(posts);
+        List<PostResponse> postResponses = new ArrayList<>();
+        for (Post post : posts) {
+            postResponses.add(new PostResponse(post));
+        }
+        return new ApiResponse<>("게시글 목록 조회 성공", postResponses);
     }
 
+    @Operation(summary = "게시글 상세 조회", description = "게시글 상세 정보를 조회하고 조회수를 1 증가시킵니다.")
     @GetMapping(path = "/{postId}")
-    public ApiResponse<?> readPost(
+    public ApiResponse<PostResponse> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        return new ApiResponse<>(postService.getPost(postId));
+        Post post = postService.readPost(postId);
+        PostResponse postResponse = new PostResponse(post);
+        return new ApiResponse<>("게시글 조회 성공", postResponse);
     }
 
+    @Operation(summary = "게시글 수정", description = "게시글의 제목과 내용을 수정합니다.")
     @PutMapping(path = "/{postId}")
-    public ApiResponse<?> updatePost(
+    public ApiResponse<Void> updatePost(
             @PathVariable(name = "postId") Long postId,
             @RequestBody UpdatePostRequest request
     ) {
         postService.updatePost(postId, request.getTitle(), request.getContent());
-        return new ApiResponse<>("게시글이 수정되었습니다.");
+        return new ApiResponse<>("게시글이 수정되었습니다.", null);
     }
 
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     @DeleteMapping(path = "/{postId}")
-    public ResponseEntity<?> deletePost(
+    public ApiResponse<Void> deletePost(
             @PathVariable(name = "postId") Long postId
     ) {
         postService.deletePost(postId);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("삭제 완료");
+        return new ApiResponse<>("게시글이 삭제되었습니다.", null);
     }
 }

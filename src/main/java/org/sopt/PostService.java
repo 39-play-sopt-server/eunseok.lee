@@ -3,6 +3,7 @@ package org.sopt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.sopt.exception.PostNotFoundException;
 
 @Service
 public class PostService {
@@ -13,21 +14,23 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public void createPost(String title, String content, Post.Category category) {
+    public Post createPost(String title, String content, Post.Category category) {
         Post post = new Post(title, content, category);
         postRepository.addPost(post);
+        return post;
     }
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
-    public Post getPost(Long postId) {
+    private Post getPost(Long postId) {
         Post post = postRepository.findById(postId);
 
-        if (post == null) throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+        if (post == null) {
+            throw new PostNotFoundException("존재하지 않는 게시글입니다.");
+        }
         return post;
-
     }
 
     public void updatePost(Long postId, String title, String content) {
@@ -39,6 +42,12 @@ public class PostService {
     public void deletePost(Long postId) {
         Post post = getPost(postId);
         postRepository.deletePost(post);
+    }
+
+    public Post readPost(Long postId) {
+        Post post = getPost(postId);
+        post.increaseViews();
+        return post;
     }
 
 

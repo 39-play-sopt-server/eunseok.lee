@@ -1,12 +1,13 @@
 package org.sopt;
 
-
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Post {
     private Long id;
     private String title;
     private String content;
     private Category category;
+    private final AtomicInteger views = new AtomicInteger(0);
 
     public enum Category {
         FREE,
@@ -30,7 +31,15 @@ public class Post {
         return this.id;
     }
 
-    // ID는 저장소에서 처음 저장할 때 부여합니다.
+    //2차 과제 : 조회수 필드 추가
+    public int getViews() {
+        return this.views.get();
+    }
+
+    public void increaseViews() {
+        this.views.incrementAndGet();
+    }
+
     void assignId(Long id) {
         this.id = id;
     }
