@@ -19,6 +19,12 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(e.getMessage(), null));
     }
 
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMemberNotFound(MemberNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiResponse<>(e.getMessage(), null));
+    }
+
     // 잘못된 입력값
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> handleBadRequest(IllegalArgumentException e) {
