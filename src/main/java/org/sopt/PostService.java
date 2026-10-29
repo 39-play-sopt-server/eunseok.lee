@@ -14,16 +14,17 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public void createPost(String title, String content, Post.Category category) {
+    public Post createPost(String title, String content, Post.Category category) {
         Post post = new Post(title, content, category);
         postRepository.addPost(post);
+        return post;
     }
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
     }
 
-    public Post getPost(Long postId) {
+    private Post getPost(Long postId) {
         Post post = postRepository.findById(postId);
 
         if (post == null) {

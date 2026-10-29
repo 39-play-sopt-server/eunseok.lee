@@ -14,14 +14,14 @@ public class GlobalExceptionHandler {
 
     // 존재하지 않는 게시글
     @ExceptionHandler(PostNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handlePostNotFound(PostNotFoundException e) {
+    public ResponseEntity<ApiResponse<Void>> handlePostNotFound(PostNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiResponse<>(e.getMessage(), null));
     }
 
     // 잘못된 입력값
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiResponse<?>> handleBadRequest(IllegalArgumentException e) {
+    public ResponseEntity<ApiResponse<Void>> handleBadRequest(IllegalArgumentException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>(e.getMessage(), null));
     }
@@ -31,14 +31,14 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<ApiResponse<?>> handleInvalidRequest(Exception e) {
+    public ResponseEntity<ApiResponse<Void>> handleInvalidRequest(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>("잘못된 요청입니다.", null));
     }
 
     // 그 외의 예외
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
 
         if (e instanceof ErrorResponse error) {
             return ResponseEntity.status(error.getStatusCode())
