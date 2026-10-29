@@ -1,0 +1,16 @@
+erDiagram
+    MEMBER ||--o{ POST : writes
+    MEMBER {
+        BIGINT id PK
+        VARCHAR name
+        DATETIME created_at
+    }
+    POST {
+        BIGINT id PK
+        VARCHAR title
+        TEXT content
+        ENUM category
+        INT views
+        BIGINT member_id FK
+        DATETIME created_at
+    }

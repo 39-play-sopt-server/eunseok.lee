@@ -6,8 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Tag(name = "게시글", description = "게시글 생성, 조회, 수정, 삭제 API")
 @RestController
@@ -33,23 +32,21 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
             @RequestBody CreatePostRequest request
     ) {
-        Post post = postService.createPost(request.getTitle(), request.getContent(), request.getCategory());
-        PostResponse postResponse = new PostResponse(post);
+        PostResponse postResponse = postService.createPost(
+                request.getTitle(), request.getContent(), request.getCategory(), request.getMemberId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>("게시글이 작성되었습니다.", postResponse));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회합니다. 조회수는 증가하지 않습니다.")
+    @Operation(summary = "게시글 목록 조회", description = "생성일 최신순으로 페이지를 조회합니다. 조회수는 증가하지 않습니다.")
     @GetMapping
-    public ApiResponse<List<PostResponse>> readPosts(
-            @Parameter(description = "현재는 입력만 받으며 실제 페이지네이션은 적용되지 않습니다.", example = "1")
-            @RequestParam(name = "page", defaultValue = "1") int page
+    public ApiResponse<Page<PostResponse>> readPosts(
+            @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @Parameter(description = "페이지 크기 (1~100)", example = "10")
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        List<Post> posts = postService.getAllPosts();
-        List<PostResponse> postResponses = new ArrayList<>();
-        for (Post post : posts) {
-            postResponses.add(new PostResponse(post));
-        }
+        Page<PostResponse> postResponses = postService.getAllPosts(page, size);
         return new ApiResponse<>("게시글 목록 조회 성공", postResponses);
     }
 
@@ -58,8 +55,7 @@ public class PostController {
     public ApiResponse<PostResponse> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        Post post = postService.readPost(postId);
-        PostResponse postResponse = new PostResponse(post);
+        PostResponse postResponse = postService.readPost(postId);
         return new ApiResponse<>("게시글 조회 성공", postResponse);
     }
 

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="510" viewBox="0 0 1000 510">
+<rect width="1000" height="510" fill="#fff"/>
+<g font-family="Arial, sans-serif" fill="#1f2937">
+<text x="50" y="38" font-size="24" font-weight="bold">Member / Post ERD</text>
+<rect x="50" y="80" width="310" height="190" rx="6" fill="#f8fafc" stroke="#475569"/>
+<rect x="570" y="80" width="380" height="350" rx="6" fill="#f8fafc" stroke="#475569"/>
+<path d="M50 125H360 M570 125H950" stroke="#475569"/>
+<text x="70" y="110" font-size="20" font-weight="bold">member</text>
+<text x="590" y="110" font-size="20" font-weight="bold">post</text>
+<g font-size="16">
+<text x="70" y="158">id: BIGINT PK, AUTO_INCREMENT</text>
+<text x="70" y="194">name: VARCHAR(255), NOT NULL</text>
+<text x="70" y="230">created_at: DATETIME, NOT NULL</text>
+<text x="590" y="158">id: BIGINT PK, AUTO_INCREMENT</text>
+<text x="590" y="194">title: VARCHAR(255)</text>
+<text x="590" y="230">content: TEXT</text>
+<text x="590" y="266">category: FREE / QUESTION / INFORMATION</text>
+<text x="590" y="302">views: INT, NOT NULL</text>
+<text x="590" y="338">member_id: BIGINT FK, NOT NULL</text>
+<text x="590" y="374">created_at: DATETIME, NOT NULL</text>
+</g>
+<path d="M360 165 H570 M376 155 V175 M555 165 L570 151 M555 165 L570 179" stroke="#2563eb" stroke-width="2" fill="none"/>
+<text x="385" y="152" font-size="16">1</text><text x="515" y="152" font-size="16">0..N</text>
+<text x="415" y="196" font-size="16">writes</text>
+<text x="50" y="475" font-size="16">Post.member_id references Member.id. BaseEntity contributes created_at to both tables.</text>
+</g></svg>
