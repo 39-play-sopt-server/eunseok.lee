@@ -1,10 +1,12 @@
 package org.sopt;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "게시글 생성 요청")
 public class CreatePostRequest {
     @Schema(description = "게시글 제목", example = "첫 게시글입니다", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "제목을 입력하세요.")
     private String title;
     @Schema(description = "게시글 내용", example = "게시글 내용입니다", requiredMode = Schema.RequiredMode.REQUIRED)
     private String content;

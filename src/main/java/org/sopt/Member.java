@@ -22,6 +22,10 @@ public class Member extends BaseEntity {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("회원 이름을 입력하세요.");
         }
+
+        if (name.length() > 255) {
+            throw new IllegalArgumentException("회원 이름은 255자를 넘을 수 없습니다.");
+        }
         this.name = name;
     }
 

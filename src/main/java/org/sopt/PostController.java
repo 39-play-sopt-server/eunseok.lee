@@ -3,6 +3,7 @@ package org.sopt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class PostController {
     )
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
-            @RequestBody CreatePostRequest request
+            @Valid @RequestBody CreatePostRequest request
     ) {
         PostResponse postResponse = postService.createPost(
                 request.getTitle(), request.getContent(), request.getCategory(), request.getMemberId());
@@ -40,14 +41,15 @@ public class PostController {
 
     @Operation(summary = "게시글 목록 조회", description = "생성일 최신순으로 페이지를 조회합니다. 조회수는 증가하지 않습니다.")
     @GetMapping
-    public ApiResponse<Page<PostResponse>> readPosts(
+    public ApiResponse<PostPageResponse> readPosts(
             @Parameter(description = "페이지 번호 (1부터 시작)", example = "1")
             @RequestParam(name = "page", defaultValue = "1") int page,
             @Parameter(description = "페이지 크기 (1~100)", example = "10")
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         Page<PostResponse> postResponses = postService.getAllPosts(page, size);
-        return new ApiResponse<>("게시글 목록 조회 성공", postResponses);
+        PostPageResponse postPageResponse = new PostPageResponse(postResponses);
+        return new ApiResponse<>("게시글 목록 조회 성공", postPageResponse);
     }
 
     @Operation(summary = "게시글 상세 조회", description = "게시글 상세 정보를 조회하고 조회수를 1 증가시킵니다.")

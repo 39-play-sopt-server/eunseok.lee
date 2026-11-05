@@ -3,12 +3,9 @@ package org.sopt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import java.util.ArrayList;
-import java.util.List;
 import org.sopt.exception.MemberNotFoundException;
 import org.sopt.exception.PostNotFoundException;
 
@@ -43,11 +40,7 @@ public class PostService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt", "id");
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         Page<Post> posts = postRepository.findAll(pageable);
-        List<PostResponse> postResponses = new ArrayList<>();
-        for (Post post : posts.getContent()) {
-            postResponses.add(new PostResponse(post));
-        }
-        return new PageImpl<>(postResponses, pageable, posts.getTotalElements());
+        return posts.map(PostResponse::new);
     }
 
     private Post getPost(Long postId) {

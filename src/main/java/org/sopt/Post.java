@@ -103,6 +103,9 @@ public class Post extends BaseEntity {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("제목을 입력하세요.");
         }
+        if (title.length() > 255) {
+            throw new IllegalArgumentException("제목은 255자를 넘을 수 없습니다.");
+        }
     }
 
     private void checkContent(String content) {

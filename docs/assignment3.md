@@ -45,7 +45,7 @@ MySQL의 `assignment` 데이터베이스를 사용한다. 실행 환경에 `SPRI
 | PUT | /api/v1/posts/{postId} | title, content 수정 |
 | DELETE | /api/v1/posts/{postId} | 게시글 삭제 |
 
-목록은 `createdAt DESC, id DESC`로 정렬한다. 날짜가 같아도 순서가 일정하다. 요청 page는 기존 API처럼 1부터 시작하고, 응답 Page의 number는 Spring 기준으로 0부터 시작한다. size는 1~100이다. 게시글 응답에는 기존 필드와 memberId, memberName, createdAt이 들어간다.
+목록은 `createdAt DESC, id DESC`로 정렬한다. 날짜가 같아도 순서가 일정하다. 요청 page는 기존 API처럼 1부터 시작하고, 응답 DTO의 number는 기존과 같이 0부터 시작한다. size는 1~100이다. 게시글 응답에는 기존 필드와 memberId, memberName, createdAt이 들어간다. 목록 응답의 data에는 content, number, size, totalElements, totalPages만 담고 Spring Page의 pageable·sort 등은 직접 노출하지 않는다.
 
 작성자 정보가 필요한 DTO는 서비스 트랜잭션 안에서 만든다. 목록에는 EntityGraph로 작성자를 함께 조회하며, open-in-view는 비활성화했다. 상세 조회·수정·삭제는 게시글 행에 쓰기 잠금을 사용하므로 조회수 갱신과 충돌하지 않도록 한다.
 
@@ -57,19 +57,7 @@ MySQL의 `assignment` 데이터베이스를 사용한다. 실행 환경에 `SPRI
 
 `verification.md`에 실제 MySQL API 검증 결과를 기록했다. Postman 컬렉션은 `assignment3.postman_collection.json`이다. 컬렉션의 baseUrl은 기본 실행 주소이며, 별도 검증 서버를 쓰면 해당 포트로 변경한다.
 
-별도 로컬 검증 서버(18081)에서 실제 실행한 Postman 화면이다. 기존 요청에 있던 테스트 스크립트의 기대 상태에 관한 제안은 API 응답과 별개이며, 응답 상태와 본문을 확인했다.
-
-### 회원 생성 — 201 Created
-
-![회원 생성](screenshots/member-create.png)
-
-### 회원 삭제 — 200 OK
-
-![회원 삭제](screenshots/member-delete.png)
-
-### 최신순 목록과 작성자·생성일 — 200 OK
-
-![페이지네이션 목록](screenshots/post-pagination.png)
+Postman 스크린샷은 현재 첨부하지 않는다. 직접 테스트한 화면으로 다시 첨부할 예정이다.
 
 ## 키워드 과제
 

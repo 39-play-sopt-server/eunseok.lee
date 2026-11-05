@@ -10,7 +10,7 @@
 - [x] 작성자 연결 및 이름 응답
 - [x] BaseEntity와 createdAt
 - [x] 최신순 페이지네이션
-- [x] 새 API Postman 화면 첨부
+- [ ] 새 API Postman 화면 첨부 (직접 테스트 후 다시 첨부 예정)
 
 ### 선택과제
 
@@ -53,7 +53,6 @@ erDiagram
 - 실제 MySQL에서 회원 생성·삭제 및 게시글 CRUD 검증
 - 작성자·생성일 응답, 최신순 페이지네이션, 입력값 오류 검증
 - 동시 상세 조회 20회에서 조회수 유실 없음 확인
-- Postman 실제 화면 3개를 docs/screenshots/에 포함
 
 ### 구현하며 고민했던 내용
 
@@ -82,7 +81,7 @@ PK는 각 행을 식별하고 FK는 참조 대상이 존재하도록 보장한�
 
 실제 실행 검증: docs/verification.md
 
-ERD와 Postman 실제 스크린샷: docs/assignment3.md, docs/screenshots/
+ERD·API·키워드 정리: docs/assignment3.md
 
 재실행용 요청 모음: docs/assignment3.postman_collection.json
 
