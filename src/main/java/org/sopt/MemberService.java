@@ -28,7 +28,6 @@ public class MemberService {
         Member member = memberRepository.findByIdForUpdate(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("존재하지 않는 회원입니다."));
         postRepository.deleteByMemberId(memberId);
-        postRepository.flush();
         memberRepository.delete(member);
     }
 }

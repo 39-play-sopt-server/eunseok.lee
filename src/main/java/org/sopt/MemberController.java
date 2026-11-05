@@ -2,6 +2,7 @@ package org.sopt;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ public class MemberController {
     )
     @PostMapping
     public ResponseEntity<ApiResponse<MemberResponse>> createMember(
-            @RequestBody CreateMemberRequest request
+            @Valid @RequestBody CreateMemberRequest request
     ) {
         Member member = memberService.createMember(request.getName());
         MemberResponse memberResponse = new MemberResponse(member);

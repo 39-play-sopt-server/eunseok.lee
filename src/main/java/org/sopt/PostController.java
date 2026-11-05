@@ -65,7 +65,7 @@ public class PostController {
     @PutMapping(path = "/{postId}")
     public ApiResponse<Void> updatePost(
             @PathVariable(name = "postId") Long postId,
-            @RequestBody UpdatePostRequest request
+            @Valid @RequestBody UpdatePostRequest request
     ) {
         postService.updatePost(postId, request.getTitle(), request.getContent());
         return new ApiResponse<>("게시글이 수정되었습니다.", null);

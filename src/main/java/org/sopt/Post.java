@@ -81,17 +81,6 @@ public class Post extends BaseEntity {
         return this.category;
     }
 
-    public void updateTitle(String title) {
-        checkTitle(title);
-        this.title = title;
-    }
-
-    public void updateContent(String content) {
-        checkContent(content);
-        this.content = content;
-
-    }
-
     public void update(String title, String content) {
         checkTitle(title);
         checkContent(content);
