@@ -1,6 +1,7 @@
 package org.sopt;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 
 @Schema(description = "게시글 응답")
 public class PostResponse {
@@ -14,6 +15,12 @@ public class PostResponse {
     private final Post.Category category;
     @Schema(description = "상세 조회 시 증가하는 조회수", example = "0")
     private final int views;
+    @Schema(description = "작성자 회원 ID", example = "1")
+    private final Long memberId;
+    @Schema(description = "작성자 이름", example = "은석")
+    private final String memberName;
+    @Schema(description = "생성일")
+    private final LocalDateTime createdAt;
 
     public PostResponse(Post post) {
         this.id = post.getId();
@@ -21,6 +28,9 @@ public class PostResponse {
         this.content = post.getContent();
         this.category = post.getCategory();
         this.views = post.getViews();
+        this.memberId = post.getMember().getId();
+        this.memberName = post.getMember().getName();
+        this.createdAt = post.getCreatedAt();
     }
 
     public Long getId() {
@@ -37,6 +47,18 @@ public class PostResponse {
 
     public Post.Category getCategory() {
         return this.category;
+    }
+
+    public Long getMemberId() {
+        return this.memberId;
+    }
+
+    public String getMemberName() {
+        return this.memberName;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
     }
 
     public int getViews() {
