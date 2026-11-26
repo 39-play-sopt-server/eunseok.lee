@@ -62,7 +62,7 @@ public class AuthController {
         requireCsrfProtection(csrfProtection);
         authService.logout(refreshToken);
 
-        ResponseCookie expiredCookie = buildRefreshCookie("", Duration.ZERO);
+        ResponseCookie expiredCookie = expiredRefreshCookie();
         return ResponseEntity.noContent()
                 .header(HttpHeaders.SET_COOKIE, expiredCookie.toString())
                 .build();
@@ -74,7 +74,11 @@ public class AuthController {
         }
     }
 
-    private ResponseCookie buildRefreshCookie(String value, Duration maxAge) {
+    static ResponseCookie expiredRefreshCookie() {
+        return buildRefreshCookie("", Duration.ZERO);
+    }
+
+    private static ResponseCookie buildRefreshCookie(String value, Duration maxAge) {
         return ResponseCookie.from("refreshToken", value)
                 .httpOnly(true)
                 .secure(true)

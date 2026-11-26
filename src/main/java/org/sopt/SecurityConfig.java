@@ -2,6 +2,7 @@ package org.sopt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,9 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
 
-    public SecurityConfig(JwtProvider jwtProvider) {
+    public SecurityConfig(JwtProvider jwtProvider, MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
+        this.memberRepository = memberRepository;
     }
 
     @Bean
@@ -37,12 +40,23 @@ public class SecurityConfig {
 
                 // URL별 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST,
+                                "/auth/signup", "/auth/login", "/auth/reissue", "/auth/logout"
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/auth/reissue", "/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/posts", "/api/v1/posts/{postId}"
+                        ).permitAll()
                         .requestMatchers(
-                                "/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/posts").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/posts/{postId}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/v1/posts/{postId}", "/api/v1/members/{memberId}"
+                        ).authenticated()
                         .anyRequest().authenticated())
 
                 // 인증 실패 시 401 응답
@@ -52,7 +66,7 @@ public class SecurityConfig {
 
                 // JWT 인증 필터 추가
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtProvider),
+                        new JwtAuthenticationFilter(jwtProvider, memberRepository),
                         UsernamePasswordAuthenticationFilter.class)
 
                 .build();

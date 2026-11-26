@@ -1,11 +1,12 @@
 package org.sopt;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+@JsonIgnoreProperties("memberId")
 @Schema(description = "게시글 생성 요청")
 public class CreatePostRequest {
     @Schema(description = "게시글 제목", example = "첫 게시글입니다", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -19,20 +20,7 @@ public class CreatePostRequest {
     @NotNull(message = "카테고리를 입력하세요.")
     private Post.Category category;
 
-    @Schema(description = "작성자 회원 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "작성자 ID를 입력하세요.")
-    @Positive(message = "작성자 ID는 1 이상이어야 합니다.")
-    private Long memberId;
-
     public CreatePostRequest() {
-    }
-
-    public Long getMemberId() {
-        return this.memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
     }
 
     public String getTitle() {

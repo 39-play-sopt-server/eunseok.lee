@@ -1,5 +1,6 @@
 package org.sopt;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -51,14 +52,22 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException("존재하지 않는 게시글입니다."));
     }
 
-    public void updatePost(Long postId, String title, String content) {
+    public void updatePost(Long postId, String title, String content, Long memberId) {
         Post post = getPost(postId);
+        requireAuthor(post, memberId);
         post.update(title, content);
     }
 
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, Long memberId) {
         Post post = getPost(postId);
+        requireAuthor(post, memberId);
         postRepository.delete(post);
+    }
+
+    private void requireAuthor(Post post, Long memberId) {
+        if (!post.getMember().getId().equals(memberId)) {
+            throw new AccessDeniedException("게시글 작성자만 수정하거나 삭제할 수 있습니다.");
+        }
     }
 
     public PostResponse readPost(Long postId) {

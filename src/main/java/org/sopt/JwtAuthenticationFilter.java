@@ -20,31 +20,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
+    private final MemberRepository memberRepository;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider, MemberRepository memberRepository) {
         this.jwtProvider = jwtProvider;
+        this.memberRepository = memberRepository;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String token = resolveToken(request);
-
-        if (token != null) {
-            try {
-                Long memberId = jwtProvider.getMemberId(token);
-
-                // 인증 완료된 Authentication 생성 후 SecurityContext에 저장
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(memberId, null, List.of());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (JwtException | IllegalArgumentException e) {
-                // 유효하지 않은 토큰이면 인증 정보를 저장하지 않음
-            }
+        Long memberId = resolveMemberId(request);
+        if (memberId != null && memberRepository.existsById(memberId)) {
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(memberId, null, List.of());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private Long resolveMemberId(HttpServletRequest request) {
+        String token = resolveToken(request);
+        if (token == null) {
+            return null;
+        }
+
+        try {
+            return jwtProvider.getMemberId(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
+        }
     }
 
     private String resolveToken(HttpServletRequest request) {
