@@ -23,6 +23,9 @@ public class Member extends BaseEntity {
     // 기존 4차 과제에서 사용하던 회원 이름
     private String name;
 
+    @Column(length = 64)
+    private String refreshTokenHash;
+
     protected Member() {}
 
     public Member(String email, String name, String password) {
@@ -36,6 +39,14 @@ public class Member extends BaseEntity {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public String getRefreshTokenHash() {
+        return this.refreshTokenHash;
+    }
+
+    public void updateRefreshTokenHash(String refreshTokenHash) {
+        this.refreshTokenHash = refreshTokenHash;
     }
 
     public Long getId() {
