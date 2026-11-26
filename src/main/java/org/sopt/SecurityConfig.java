@@ -16,11 +16,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
+    private final JwtParser jwtParser;
     private final MemberRepository memberRepository;
 
-    public SecurityConfig(JwtProvider jwtProvider, MemberRepository memberRepository) {
-        this.jwtProvider = jwtProvider;
+    public SecurityConfig(JwtParser jwtParser, MemberRepository memberRepository) {
+        this.jwtParser = jwtParser;
         this.memberRepository = memberRepository;
     }
 
@@ -66,7 +66,7 @@ public class SecurityConfig {
 
                 // JWT 인증 필터 추가
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtProvider, memberRepository),
+                        new JwtAuthenticationFilter(jwtParser, memberRepository),
                         UsernamePasswordAuthenticationFilter.class)
 
                 .build();

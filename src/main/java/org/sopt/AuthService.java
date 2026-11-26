@@ -18,12 +18,19 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtProvider jwtProvider;
+    private final JwtGenerator jwtGenerator;
+    private final JwtParser jwtParser;
 
-    public AuthService(MemberRepository memberRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider) {
+    public AuthService(
+            MemberRepository memberRepository,
+            PasswordEncoder passwordEncoder,
+            JwtGenerator jwtGenerator,
+            JwtParser jwtParser
+    ) {
         this.memberRepository = memberRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtProvider = jwtProvider;
+        this.jwtGenerator = jwtGenerator;
+        this.jwtParser = jwtParser;
     }
 
     @Transactional
@@ -45,8 +52,8 @@ public class AuthService {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
         }
 
-        String accessToken = jwtProvider.createAccessToken(member.getId());
-        String refreshToken = jwtProvider.createRefreshToken(member.getId());
+        String accessToken = jwtGenerator.createAccessToken(member.getId());
+        String refreshToken = jwtGenerator.createRefreshToken(member.getId());
         member.updateRefreshTokenHash(hashRefreshToken(refreshToken));
 
         return new LoginTokens(accessToken, refreshToken);
@@ -55,7 +62,7 @@ public class AuthService {
     @Transactional(readOnly = true)
     public String reissue(String refreshToken) {
         Member member = validateRefreshToken(refreshToken, false);
-        return jwtProvider.createAccessToken(member.getId());
+        return jwtGenerator.createAccessToken(member.getId());
     }
 
     @Transactional
@@ -71,7 +78,7 @@ public class AuthService {
 
         Long memberId;
         try {
-            memberId = jwtProvider.getRefreshTokenMemberId(refreshToken);
+            memberId = jwtParser.getRefreshTokenMemberId(refreshToken);
         } catch (JwtException | IllegalArgumentException e) {
             throw new BadCredentialsException(INVALID_REFRESH_TOKEN, e);
         }

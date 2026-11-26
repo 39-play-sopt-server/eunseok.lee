@@ -19,11 +19,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String BEARER_PREFIX = "Bearer ";
 
-    private final JwtProvider jwtProvider;
+    private final JwtParser jwtParser;
     private final MemberRepository memberRepository;
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, MemberRepository memberRepository) {
-        this.jwtProvider = jwtProvider;
+    public JwtAuthenticationFilter(JwtParser jwtParser, MemberRepository memberRepository) {
+        this.jwtParser = jwtParser;
         this.memberRepository = memberRepository;
     }
 
@@ -48,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         try {
-            return jwtProvider.getMemberId(token);
+            return jwtParser.getAccessTokenMemberId(token);
         } catch (JwtException | IllegalArgumentException e) {
             return null;
         }
