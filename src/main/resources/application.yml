@@ -1,13 +1,15 @@
+
 spring:
   application:
     name: assignment
 
   datasource:
-    url: jdbc:mysql://localhost:3306/assignment
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    open-in-view: false
     hibernate:
       ddl-auto: update
     show-sql: true
@@ -15,3 +17,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 1800000 # 30분 (ms)
