@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 
@@ -31,10 +32,11 @@ public class PostController {
     )
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> createPost(
-            @Valid @RequestBody CreatePostRequest request
+            @Valid @RequestBody CreatePostRequest request,
+            @AuthenticationPrincipal Long memberId
     ) {
         PostResponse postResponse = postService.createPost(
-                request.getTitle(), request.getContent(), request.getCategory(), request.getMemberId());
+                request.getTitle(), request.getContent(), request.getCategory(), memberId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse<>("게시글이 작성되었습니다.", postResponse));
     }
@@ -65,18 +67,20 @@ public class PostController {
     @PutMapping(path = "/{postId}")
     public ApiResponse<Void> updatePost(
             @PathVariable(name = "postId") Long postId,
-            @Valid @RequestBody UpdatePostRequest request
+            @Valid @RequestBody UpdatePostRequest request,
+            @AuthenticationPrincipal Long memberId
     ) {
-        postService.updatePost(postId, request.getTitle(), request.getContent());
+        postService.updatePost(postId, request.getTitle(), request.getContent(), memberId);
         return new ApiResponse<>("게시글이 수정되었습니다.", null);
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     @DeleteMapping(path = "/{postId}")
     public ApiResponse<Void> deletePost(
-            @PathVariable(name = "postId") Long postId
+            @PathVariable(name = "postId") Long postId,
+            @AuthenticationPrincipal Long memberId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(postId, memberId);
         return new ApiResponse<>("게시글이 삭제되었습니다.", null);
     }
 }

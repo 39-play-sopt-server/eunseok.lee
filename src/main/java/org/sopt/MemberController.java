@@ -3,6 +3,7 @@ package org.sopt;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,7 +35,7 @@ public class MemberController {
             description = "회원의 게시글을 먼저 삭제한 후 회원 정보를 삭제합니다."
     )
     @DeleteMapping("/api/v1/members/{memberId}")
-    public ApiResponse<Void> deleteMember(
+    public ResponseEntity<ApiResponse<Void>> deleteMember(
             @PathVariable(name = "memberId") Long memberId,
             @AuthenticationPrincipal Long authenticatedMemberId
     ) {
@@ -42,6 +43,8 @@ public class MemberController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         memberService.deleteMember(memberId);
-        return new ApiResponse<>("회원이 삭제되었습니다.", null);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, AuthController.expiredRefreshCookie().toString())
+                .body(new ApiResponse<>("회원이 삭제되었습니다.", null));
     }
 }
